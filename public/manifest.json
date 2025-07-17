@@ -1,0 +1,22 @@
+
+{
+  "name": "SalonFlow",
+  "short_name": "SalonFlow",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#E5E0F8",
+  "theme_color": "#7C5DFA",
+  "description": "Manage your salon clients with ease.",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
