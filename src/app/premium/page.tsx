@@ -50,7 +50,7 @@ export default function PremiumPage() {
         </div>
         <CardContent className="p-6">
           <div className="text-center mb-6">
-            <span className="text-5xl font-bold">$22</span>
+            <span className="text-5xl font-bold">$47</span>
             <span className="text-lg text-muted-foreground">/month</span>
           </div>
           <ul className="space-y-3">
