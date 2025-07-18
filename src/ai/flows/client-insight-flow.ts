@@ -1,90 +1,67 @@
-
-'use server';
-/**
- * @fileOverview A Genkit flow for generating insights about a salon client.
- *
- * - getClientInsight: Generates a summary of a client's visit history.
- * - GetClientInsightInput: The input type for the getClientInsight function.
- * - GetClientInsightOutput: The return type for the getClientInsight function.
- */
-
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
-
-const VisitSchema = z.object({
-  id: z.string(),
-  date: z.string().describe("The ISO 8601 date string of the visit."),
-  services: z.array(z.string()),
-  amount: z.number(),
-  paid: z.boolean(),
-  notes: z.string().optional().nullable(),
-  nextVisit: z.string().optional().nullable().describe("The ISO 8601 date string for the next visit, if scheduled."),
-});
-
-const ClientSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  phone: z.string(),
-  photoUrl: z.string(),
-  visits: z.array(VisitSchema),
-});
-
-const GetClientInsightInputSchema = z.object({
-  client: ClientSchema,
-});
-export type GetClientInsightInput = z.infer<typeof GetClientInsightInputSchema>;
-
-const GetClientInsightOutputSchema = z.object({
-  summary: z.string().describe("A concise summary of the client's behavior, habits, and value to the business."),
-});
-export type GetClientInsightOutput = z.infer<typeof GetClientInsightOutputSchema>;
-
-export async function getClientInsight(input: GetClientInsightInput): Promise<GetClientInsightOutput> {
-  return clientInsightFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'clientInsightPrompt',
-  input: { schema: GetClientInsightInputSchema },
-  output: { schema: GetClientInsightOutputSchema },
-  prompt: `
-    You are an expert business analyst for a salon. Your task is to analyze a client's visit history and provide a short, insightful summary.
-
-    Analyze the provided client data, which includes their name and a list of all their past visits. Each visit has a date, a list of services, the amount paid, and payment status.
-
-    Based on this data, generate a concise summary (2-3 sentences) covering the following points:
-    - Loyalty and value: Is this a regular/loyal client? Mention total spending and number of visits.
-    - Service preferences: What are their most frequent services?
-    - Visit frequency: How often do they visit? Calculate the approximate time between their most common services if possible.
-    - Any other notable patterns (e.g., always pays on time, frequently books follow-up appointments, etc.).
-
-    Here is the client data in JSON format:
-    \`\`\`json
-    {{{json client}}}
-    \`\`\`
-
-    Provide only the summary as your output.
-  `,
-});
-
-const clientInsightFlow = ai.defineFlow(
-  {
-    name: 'clientInsightFlow',
-    inputSchema: GetClientInsightInputSchema,
-    outputSchema: GetClientInsightOutputSchema,
+{
+  "name": "nextn",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 9002 --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
-  async (input) => {
-    // Convert date objects to ISO strings for consistent JSON serialization
-    const serializableClient = {
-        ...input.client,
-        visits: input.client.visits.map(v => ({
-            ...v,
-            date: new Date(v.date).toISOString(),
-            nextVisit: v.nextVisit ? new Date(v.nextVisit).toISOString() : null,
-        }))
-    };
-    
-    const { output } = await prompt({ client: serializableClient });
-    return output!;
-  }
-);
+  "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.7",
+    "@hookform/resolvers": "^4.1.3",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-progress": "^1.1.2",
+    "@radix-ui/react-radio-group": "^1.2.3",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slider": "^1.2.3",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.1.3",
+    "@radix-ui/react-tabs": "^1.1.3",
+    "@radix-ui/react-toast": "^1.2.6",
+    "@radix-ui/react-tooltip": "^1.1.8",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
+    "date-fns": "^3.6.0",
+    "dotenv": "^16.5.0",
+    "embla-carousel-react": "^8.6.0",
+    "firebase": "^10.12.2",
+    "firebase-admin": "^12.1.1",
+    "lucide-react": "^0.475.0",
+    "next": "15.3.3",
+    "next-themes": "^0.3.0",
+    "patch-package": "^8.0.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "recharts": "^2.15.1",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/recharts": "^1.8.29",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  },
+  "main": ".next/server/index.js"
+}

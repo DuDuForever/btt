@@ -1,8 +1,6 @@
 
 "use client"
 
-export const runtime = 'edge';
-
 import * as React from "react"
 import { getClient, addVisit, deleteClient, updateVisitPaymentStatus, deleteVisit } from "@/lib/data"
 import { notFound, useRouter } from "next/navigation"
@@ -55,14 +53,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { format } from "date-fns"
-import { User, Pencil, Phone, PlusCircle, CheckCircle2, XCircle, Trash2, CalendarClock, Loader2, MoreVertical, Sparkles, Shield } from "lucide-react"
+import { User, Pencil, Phone, PlusCircle, CheckCircle2, XCircle, Trash2, CalendarClock, Loader2, MoreVertical, Shield } from "lucide-react"
 import Link from "next/link"
 import type { Client, Visit } from "@/lib/types"
 import { AddVisitForm } from "@/components/add-visit-form"
 import { useToast } from "@/hooks/use-toast"
 import * as z from "zod"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getClientInsight, type GetClientInsightOutput } from "@/ai/flows/client-insight-flow"
 import { useAuth } from "@/hooks/use-auth"
 
 const addVisitFormSchema = z.object({
@@ -85,8 +82,6 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
   const [isUpdatingPayment, setIsUpdatingPayment] = React.useState<string | null>(null)
   const [visitToDelete, setVisitToDelete] = React.useState<Visit | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false)
-  const [insight, setInsight] = React.useState<GetClientInsightOutput | null>(null);
-  const [isInsightLoading, setIsInsightLoading] = React.useState(false);
 
   const isOwner = role === 'owner';
 
@@ -205,25 +200,6 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
     return futureVisits[0]?.nextVisit ? new Date(futureVisits[0].nextVisit) : null;
   }, [client]);
 
-  const handleGenerateInsight = async () => {
-    if (!client || !isOwner) return;
-    setIsInsightLoading(true);
-    setInsight(null);
-    try {
-        const result = await getClientInsight({ client });
-        setInsight(result);
-    } catch(error) {
-        console.error("Failed to generate insight", error);
-        toast({
-            variant: "destructive",
-            title: "AI Error",
-            description: "Could not generate client insight. Please try again later."
-        })
-    } finally {
-        setIsInsightLoading(false);
-    }
-  }
-
 
   if (isLoading || !client) {
     return (
@@ -323,19 +299,11 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
                 </div>
                 </CardContent>
                 {isOwner && (
-                    <CardFooter className="flex justify-between">
-                        <Button variant="outline" onClick={handleGenerateInsight} disabled={isInsightLoading}>
-                            {isInsightLoading ? (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                                <Sparkles className="mr-2 h-4 w-4" />
-                            )}
-                        Generate AI Insight
-                        </Button>
+                    <CardFooter>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm">
-                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                <Button variant="destructive" size="sm" className="w-full">
+                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Client
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
@@ -354,31 +322,6 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
                     </CardFooter>
                 )}
             </Card>
-
-            {isOwner && (isInsightLoading || insight) && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center">
-                            <Sparkles className="mr-2 h-5 w-5 text-primary" />
-                            AI-Powered Insight
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {isInsightLoading ? (
-                            <div className="space-y-2">
-                                <Skeleton className="h-4 w-full" />
-                                <Skeleton className="h-4 w-full" />
-                                <Skeleton className="h-4 w-3/4" />
-                            </div>
-                        ) : (
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                               {insight?.summary}
-                            </p>
-                        )}
-                    </CardContent>
-                </Card>
-            )}
-
         </div>
 
         <div className="md:col-span-2">
