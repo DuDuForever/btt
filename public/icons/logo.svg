@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="512" height="512" fill="#6750A4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="1em" height="1em">
     <path fill="none" d="M0 0h256v256H0z" />
     <path
       d="M168 88.003S144 32 88 32c-24.22 0-46.12 13.78-65.06 32.55M88 167.997S112 224 168 224c24.22 0 46.12-13.78 65.06-32.55"
       fill="none"
-      stroke="#6750A4"
+      stroke="currentColor"
       stroke-linecap="round"
       stroke-linejoin="round"
       stroke-width="24"
