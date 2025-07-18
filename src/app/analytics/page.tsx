@@ -191,14 +191,14 @@ export default function AnalyticsPage() {
         <Card>
             <Tabs defaultValue="monthly">
                 <CardHeader>
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
                         <div>
                             <CardTitle>Revenue</CardTitle>
                             <CardDescription>Revenue from paid visits per period.</CardDescription>
                         </div>
-                        <TabsList>
-                            <TabsTrigger value="weekly">Weekly</TabsTrigger>
-                            <TabsTrigger value="monthly">Monthly</TabsTrigger>
+                        <TabsList className="w-full sm:w-auto">
+                            <TabsTrigger value="weekly" className="flex-1 sm:flex-none">Weekly</TabsTrigger>
+                            <TabsTrigger value="monthly" className="flex-1 sm:flex-none">Monthly</TabsTrigger>
                         </TabsList>
                     </div>
                 </CardHeader>

@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     setLoading(true);
     try {
         await signOut(auth);
@@ -97,7 +97,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
         setLoading(false);
     }
-  };
+  }, [router, setRole]);
+  
+   // Auto-logout on tab/browser close
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+        // This runs just before the window is closed.
+        // We can't guarantee an async call like logout() completes,
+        // but we can try. A more robust solution for security is short session expiry.
+        if (auth.currentUser) {
+            logout();
+        }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [logout]);
   
   const value = {
     user,

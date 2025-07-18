@@ -107,6 +107,8 @@ export function AddVisitForm({ onSubmit, isSubmitting }: AddVisitFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+       <ScrollArea className="max-h-[70vh] p-1">
+        <div className="space-y-6 pr-4">
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}
@@ -364,7 +366,9 @@ export function AddVisitForm({ onSubmit, isSubmitting }: AddVisitFormProps) {
             )}
             />
         </div>
-        <div className="flex justify-end pt-4">
+        </div>
+        </ScrollArea>
+        <div className="flex justify-end pt-4 sticky bottom-0 bg-background pb-1">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Visit

@@ -28,7 +28,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#7C5DFA" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#6750A4" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body className="font-body antialiased">
         <Providers>

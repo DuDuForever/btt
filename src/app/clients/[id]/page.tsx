@@ -275,8 +275,8 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-1 space-y-6">
+      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
+        <div className="lg:col-span-1 space-y-6">
             <Card>
                 <CardContent className="p-6">
                 <div className="flex flex-col items-center md:items-start gap-6">
@@ -324,7 +324,7 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
             </Card>
         </div>
 
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2">
             {isOwner ? (
                 <AlertDialog open={!!visitToDelete} onOpenChange={(isOpen) => !isOpen && setVisitToDelete(null)}>
                     <Card>
@@ -332,8 +332,8 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
                         <CardTitle>Visit History</CardTitle>
                         <CardDescription>A complete record of all client visits and payments.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-0 md:p-6">
-                          <div className="overflow-x-auto">
+                        <CardContent className="p-0 md:p-6 overflow-x-auto">
+                          <div className="min-w-[600px] md:min-w-full">
                             <Table>
                                 <TableHeader>
                                 <TableRow>
