@@ -4,12 +4,11 @@
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
-import { ThemeProvider } from '@/components/theme-provider';
 import { AppShell } from '@/components/app-shell';
 import { Skeleton } from './ui/skeleton';
 import { RoleSelector } from './role-selector';
 
-const publicPaths = ['/login', '/premium', '/premium/request'];
+const publicPaths = ['/login', '/premium', '/premium/request', '/premium/checkout'];
 
 function FullPageLoader() {
     return (
@@ -77,8 +76,6 @@ export function AppContent({ children }: { children: React.ReactNode }) {
 
   // If logged in with a role, show the main app shell
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <AppShell>{children}</AppShell>
-    </ThemeProvider>
   );
 }

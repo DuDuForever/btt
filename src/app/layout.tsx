@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/hooks/use-auth';
 import { AppContent } from '@/components/app-content';
+import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
   title: 'SalonFlow',
@@ -31,9 +31,9 @@ export default function RootLayout({
         <meta name="theme-color" content="#7C5DFA" />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
+        <Providers>
             <AppContent>{children}</AppContent>
-        </AuthProvider>
+        </Providers>
         <Toaster />
       </body>
     </html>
