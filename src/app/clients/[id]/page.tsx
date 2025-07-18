@@ -1,6 +1,7 @@
 
-export const runtime = 'edge';
 "use client"
+
+export const runtime = 'edge';
 
 import * as React from "react"
 import { getClient, addVisit, deleteClient, updateVisitPaymentStatus, deleteVisit } from "@/lib/data"
