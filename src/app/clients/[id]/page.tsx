@@ -220,12 +220,9 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
             </div>
             <Card>
                 <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                        <Skeleton className="h-32 w-32 rounded-full" />
-                        <div className="flex-1 space-y-2 text-center md:text-left">
-                            <Skeleton className="h-8 w-40 mx-auto md:mx-0" />
-                            <Skeleton className="h-5 w-32 mx-auto md:mx-0" />
-                        </div>
+                     <div className="space-y-4 text-center md:text-left">
+                        <Skeleton className="h-8 w-40 mx-auto md:mx-0" />
+                        <Skeleton className="h-5 w-32 mx-auto md:mx-0" />
                     </div>
                 </CardContent>
             </Card>
@@ -281,173 +278,172 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
 
       <Card>
         <CardContent className="p-6">
-          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-            <div className="lg:col-span-1 space-y-4">
-                <div className="space-y-4 text-center md:text-left">
-                    <div className="flex items-baseline justify-center md:justify-start gap-2">
-                        <h1 className="text-2xl font-bold">{client.name}</h1>
-                        <span className="text-sm font-medium text-muted-foreground">#{client.displayId}</span>
-                    </div>
-                    <div className="flex items-center justify-center md:justify-start text-muted-foreground">
-                        <Phone className="mr-2 h-4 w-4" />
-                        <span>{client.phone}</span>
-                    </div>
-                     {nextAppointment && (
-                        <div className="flex items-center justify-center md:justify-start text-sm text-primary font-medium p-2 bg-primary/10 rounded-md">
-                            <CalendarClock className="mr-2 h-4 w-4" />
-                            <span>Next Visit: {format(nextAppointment, 'PPP p')}</span>
-                        </div>
-                    )}
+            <div className="space-y-4 text-center md:text-left">
+                <div className="flex items-baseline justify-center md:justify-start gap-2">
+                    <h1 className="text-2xl font-bold">{client.name}</h1>
+                    <span className="text-sm font-medium text-muted-foreground">#{client.displayId}</span>
                 </div>
+                <div className="flex items-center justify-center md:justify-start text-muted-foreground">
+                    <Phone className="mr-2 h-4 w-4" />
+                    <span>{client.phone}</span>
+                </div>
+                    {nextAppointment && (
+                    <div className="flex items-center justify-center md:justify-start text-sm text-primary font-medium p-2 bg-primary/10 rounded-md">
+                        <CalendarClock className="mr-2 h-4 w-4" />
+                        <span>Next Visit: {format(nextAppointment, 'PPP p')}</span>
+                    </div>
+                )}
             </div>
+        </CardContent>
+      </Card>
 
-            <div className="lg:col-span-2">
-                {isOwner ? (
-                    <AlertDialog open={!!visitToDelete} onOpenChange={(isOpen) => !isOpen && setVisitToDelete(null)}>
-                        <div>
-                            <div className="flex justify-between items-start mb-4">
-                                <CardHeader className="p-0">
-                                <CardTitle>Visit History</CardTitle>
-                                <CardDescription>A complete record of all client visits and payments.</CardDescription>
-                                </CardHeader>
-                                <AlertDialog open={isClientDeleteDialogOpen} onOpenChange={setIsClientDeleteDialogOpen}>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                <MoreVertical className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Client Actions</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <AlertDialogTrigger asChild>
-                                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
-                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Client
-                                                </DropdownMenuItem>
-                                            </AlertDialogTrigger>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete {client.name} and all of their visit history.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={handleDeleteClient}>Continue</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </div>
-                            <CardContent className="p-0 overflow-x-auto">
-                              <div className="min-w-[600px] md:min-w-full">
-                                <Table>
-                                    <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Services</TableHead>
-                                        <TableHead>Amount</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
-                                    </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                    {client.visits.length > 0 ? (
-                                        client.visits.map((visit) => (
-                                        <TableRow key={visit.id}>
-                                            <TableCell className="font-medium whitespace-nowrap">{format(visit.date, "PPP p")}</TableCell>
-                                            <TableCell>
-                                            <div className="flex flex-wrap gap-1">
-                                                {visit.services.map((service, index) => (
-                                                    <Badge key={index} variant="secondary">{service}</Badge>
-                                                ))}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>${visit.amount.toFixed(2)}</TableCell>
-                                            <TableCell>
-                                            <Badge variant={visit.paid ? "default" : "destructive"} className="flex items-center w-fit">
-                                                {visit.paid ? <CheckCircle2 className="mr-1 h-3 w-3" /> : <XCircle className="mr-1 h-3 w-3" />}
-                                                {visit.paid ? 'Paid' : 'Unpaid'}
-                                            </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <MoreVertical className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                    {!visit.paid && (
-                                                        <DropdownMenuItem
-                                                            onClick={() => handleMarkAsPaid(visit.id)}
-                                                            disabled={isUpdatingPayment === visit.id}
-                                                        >
-                                                            {isUpdatingPayment === visit.id ? (
-                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                            ) : (
-                                                                <CheckCircle2 className="mr-2 h-4 w-4" />
-                                                            )}
-                                                            Mark as Paid
-                                                        </DropdownMenuItem>
-                                                    )}
-                                                        <DropdownMenuItem 
-                                                        className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                                                        onClick={() => setVisitToDelete(visit)}
-                                                        >
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Delete Visit
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                        <TableCell colSpan={5} className="h-24 text-center">
-                                            No visit history found.
-                                        </TableCell>
-                                        </TableRow>
-                                    )}
-                                    </TableBody>
-                                </Table>
-                              </div>
-                            </CardContent>
-                        </div>
+    <AlertDialog open={!!visitToDelete} onOpenChange={(isOpen) => !isOpen && setVisitToDelete(null)}>
+        <Card>
+            {isOwner ? (
+                <>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Visit History</CardTitle>
+                        <CardDescription>A complete record of all client visits and payments.</CardDescription>
+                    </div>
+                    <AlertDialog open={isClientDeleteDialogOpen} onOpenChange={setIsClientDeleteDialogOpen}>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <MoreVertical className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Client Actions</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                        <Trash2 className="mr-2 h-4 w-4" /> Delete Client
+                                    </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <AlertDialogContent>
                             <AlertDialogHeader>
                                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete this visit record.
+                                    This action cannot be undone. This will permanently delete {client.name} and all of their visit history.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDeleteVisit}>Continue</AlertDialogAction>
+                                <AlertDialogAction onClick={handleDeleteClient}>Continue</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
-                ) : (
-                    <div className="h-full">
-                        <CardHeader className="p-0">
-                            <CardTitle>Restricted Access</CardTitle>
-                            <CardDescription>
-                                As an assistant, you can add new visits but cannot view past visit history.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex flex-col items-center justify-center h-64 text-center p-0">
-                            <Shield className="w-16 h-16 text-muted-foreground/50 mb-4" />
-                            <p className="text-muted-foreground">Please contact the owner for full access.</p>
-                        </CardContent>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader>
+                            <TableRow>
+                                <TableHead className="whitespace-nowrap">Date</TableHead>
+                                <TableHead>Services</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                            {client.visits.length > 0 ? (
+                                client.visits.map((visit) => (
+                                <TableRow key={visit.id}>
+                                    <TableCell className="font-medium whitespace-nowrap">{format(visit.date, "PPP p")}</TableCell>
+                                    <TableCell>
+                                    <div className="flex flex-wrap gap-1 max-w-xs">
+                                        {visit.services.map((service, index) => (
+                                            <Badge key={index} variant="secondary" className="whitespace-nowrap">{service}</Badge>
+                                        ))}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>${visit.amount.toFixed(2)}</TableCell>
+                                    <TableCell>
+                                    <Badge variant={visit.paid ? "default" : "destructive"} className="flex items-center w-fit">
+                                        {visit.paid ? <CheckCircle2 className="mr-1 h-3 w-3" /> : <XCircle className="mr-1 h-3 w-3" />}
+                                        {visit.paid ? 'Paid' : 'Unpaid'}
+                                    </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <MoreVertical className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                            {!visit.paid && (
+                                                <DropdownMenuItem
+                                                    onClick={() => handleMarkAsPaid(visit.id)}
+                                                    disabled={isUpdatingPayment === visit.id}
+                                                >
+                                                    {isUpdatingPayment === visit.id ? (
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                    ) : (
+                                                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                                                    )}
+                                                    Mark as Paid
+                                                </DropdownMenuItem>
+                                            )}
+                                                <DropdownMenuItem 
+                                                className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                                                onClick={() => setVisitToDelete(visit)}
+                                                >
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                    Delete Visit
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                <TableCell colSpan={5} className="h-24 text-center">
+                                    No visit history found.
+                                </TableCell>
+                                </TableRow>
+                            )}
+                            </TableBody>
+                        </Table>
                     </div>
-                )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                </CardContent>
+                </>
+            ) : (
+                <>
+                <CardHeader>
+                    <CardTitle>Restricted Access</CardTitle>
+                    <CardDescription>
+                        As an assistant, you can add new visits but cannot view past visit history.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center justify-center h-48 text-center">
+                    <Shield className="w-16 h-16 text-muted-foreground/50 mb-4" />
+                    <p className="text-muted-foreground">Please contact the owner for full access.</p>
+                </CardContent>
+                </>
+            )}
+        </Card>
+        
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete this visit record.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteVisit}>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
     </div>
   )
 }
+
+    
