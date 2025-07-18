@@ -30,7 +30,7 @@ export default function RootLayout({
         />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#6750A4" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icons/logo.svg" />
       </head>
       <body className="font-body antialiased">
         <Providers>
