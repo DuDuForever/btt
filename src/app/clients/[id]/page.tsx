@@ -82,6 +82,7 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
   const [isSubmittingVisit, setIsSubmittingVisit] = React.useState(false)
   const [isUpdatingPayment, setIsUpdatingPayment] = React.useState<string | null>(null)
   const [visitToDelete, setVisitToDelete] = React.useState<Visit | null>(null);
+  const [isClientDeleteDialogOpen, setIsClientDeleteDialogOpen] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false)
 
   const isOwner = role === 'owner';
@@ -190,6 +191,8 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
             title: "Error",
             description: "Failed to delete client. Please try again."
         });
+    } finally {
+        setIsClientDeleteDialogOpen(false);
     }
   }
   
@@ -279,7 +282,7 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
       <Card>
         <CardContent className="p-6">
           <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-4">
                 <div className="space-y-4 text-center md:text-left">
                     <div className="flex items-baseline justify-center md:justify-start gap-2">
                         <h1 className="text-2xl font-bold">{client.name}</h1>
@@ -296,37 +299,48 @@ export default function ClientProfilePage({ params }: { params: { id: string } }
                         </div>
                     )}
                 </div>
-                 {isOwner && (
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="sm" className="w-full">
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete Client
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete {client.name} and all of their visit history.
-                            </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteClient}>Continue</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                )}
             </div>
 
             <div className="lg:col-span-2">
                 {isOwner ? (
                     <AlertDialog open={!!visitToDelete} onOpenChange={(isOpen) => !isOpen && setVisitToDelete(null)}>
                         <div>
-                            <CardHeader className="p-0 mb-4">
-                              <CardTitle>Visit History</CardTitle>
-                              <CardDescription>A complete record of all client visits and payments.</CardDescription>
-                            </CardHeader>
+                            <div className="flex justify-between items-start mb-4">
+                                <CardHeader className="p-0">
+                                <CardTitle>Visit History</CardTitle>
+                                <CardDescription>A complete record of all client visits and payments.</CardDescription>
+                                </CardHeader>
+                                <AlertDialog open={isClientDeleteDialogOpen} onOpenChange={setIsClientDeleteDialogOpen}>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                <MoreVertical className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuLabel>Client Actions</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <AlertDialogTrigger asChild>
+                                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Client
+                                                </DropdownMenuItem>
+                                            </AlertDialogTrigger>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. This will permanently delete {client.name} and all of their visit history.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleDeleteClient}>Continue</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
                             <CardContent className="p-0 overflow-x-auto">
                               <div className="min-w-[600px] md:min-w-full">
                                 <Table>
