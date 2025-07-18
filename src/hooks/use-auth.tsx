@@ -14,7 +14,7 @@ interface AuthContextType {
   loading: boolean;
   role: UserRole;
   setRole: (role: UserRole) => void;
-  login: (email: string, pass: string) => Promise<any>;
+  login: (email: string, pass: string, rememberMe?: boolean) => Promise<any>;
   logout: () => Promise<void>;
 }
 
@@ -27,14 +27,22 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
 });
 
+const REMEMBER_ME_STORAGE_KEY = "salonflow-remember-me";
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRoleState] = useState<UserRole>(null);
+  const [shouldRemember, setShouldRemember] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
-    // Attempt to load role from session storage on initial load
+    // Check local storage for remember me preference
+    const savedRememberMe = localStorage.getItem(REMEMBER_ME_STORAGE_KEY);
+    if (savedRememberMe === 'true') {
+        setShouldRemember(true);
+    }
+
     const savedRole = sessionStorage.getItem('userRole') as UserRole;
     if (savedRole) {
       setRoleState(savedRole);
@@ -44,16 +52,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(user);
       if (user) {
         const token = await user.getIdToken();
-        // Set session cookie
         await fetch('/api/auth/session', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });
       } else {
-         // Clear session cookie and role
         await fetch('/api/auth/session', { method: 'DELETE' });
         sessionStorage.removeItem('userRole');
+        localStorage.removeItem(REMEMBER_ME_STORAGE_KEY);
         setRoleState(null);
+        setShouldRemember(false);
       }
       setLoading(false);
     });
@@ -70,13 +78,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const login = async (email: string, pass: string) => {
+  const login = async (email: string, pass: string, rememberMe: boolean = false) => {
     setLoading(true);
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-        // Do not set role here, let AppContent handle the role selection modal
+        setShouldRemember(rememberMe);
+        if (rememberMe) {
+            localStorage.setItem(REMEMBER_ME_STORAGE_KEY, 'true');
+        } else {
+            localStorage.removeItem(REMEMBER_ME_STORAGE_KEY);
+        }
         setUser(userCredential.user);
-        // Do not redirect here, let AppContent handle it after role selection
     } catch (error) {
         console.error("Login failed:", error);
         throw error;
@@ -90,7 +102,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
         await signOut(auth);
         setUser(null);
-        setRole(null); // Clear role on logout
+        setRole(null);
+        localStorage.removeItem(REMEMBER_ME_STORAGE_KEY);
         router.push('/login');
     } catch (error) {
         console.error("Logout failed:", error);
@@ -99,21 +112,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [router, setRole]);
   
-   // Auto-logout on tab/browser close
   useEffect(() => {
     const handleBeforeUnload = () => {
-        // This runs just before the window is closed.
-        // We can't guarantee an async call like logout() completes,
-        // but we can try. A more robust solution for security is short session expiry.
-        if (auth.currentUser) {
-            logout();
+        // Only auto-logout if the user did NOT check "Keep me logged in"
+        if (!shouldRemember && auth.currentUser) {
+            signOut(auth);
         }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [logout]);
+  }, [shouldRemember]);
   
   const value = {
     user,
